@@ -1,0 +1,44 @@
+:name: STM32F4 Discovery
+:description: This script runs Contiki on STM32F4 Discovery.
+
+using sysbus
+$name?="STM32F4_Discovery"
+mach create $name
+
+machine LoadPlatformDescription @platforms/boards/stm3240G_eval.repl
+
+cpu PerformanceInMips 125
+
+$bin?=@/home/emfios/work/STM32/STM3240G-EVAL.NET/sample.elf
+
+logLevel -1 gpioPortG.led0
+logLevel -1 gpioPortG.led1
+logLevel -1 gpioPortI.led2
+logLevel -1 gpioPortC.led3
+
+showAnalyzer sysbus.uart4
+
+emulation CreateSwitch "switch1"
+connector Connect sysbus.ethernet switch1
+emulation CreateTap "tap0" "tap"
+connector Connect host.tap switch1
+
+### Set random board UNIQUE ID ###
+
+python "import _random"
+python "rand = _random.Random()"
+
+$id1 = `python "print rand.getrandbits(32)"`
+$id2 = `python "print rand.getrandbits(32)"`
+$id3 = `python "print rand.getrandbits(32)"`
+macro reset
+"""
+    sysbus LoadELF $bin
+
+    sysbus WriteDoubleWord 0x1FFF7A10 $id1
+    sysbus WriteDoubleWord 0x1FFF7A14 $id2
+    sysbus WriteDoubleWord 0x1FFF7A18 $id3
+"""
+
+runMacro $reset
+

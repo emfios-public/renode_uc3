@@ -1,0 +1,16 @@
+using "platforms/cpus/stm32f4.repl"
+
+button0: Miscellaneous.Button @ gpioPortA
+    -> gpioPortA@0
+
+led0: Miscellaneous.LED @ gpioPortD
+led1: Miscellaneous.LED @ gpioPortD
+led2: Miscellaneous.LED @ gpioPortD
+led3: Miscellaneous.LED @ gpioPortD
+
+gpioPortD:
+    13 -> led0@0
+    12 -> led1@0
+    14 -> led2@0
+    15 -> led3@0
+
